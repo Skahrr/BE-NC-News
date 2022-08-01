@@ -67,3 +67,9 @@ describe("GET /api/articles/:article_id", () => {
     })
   })
 });
+
+describe('PATCH /api/articles/article_id', ()=>{
+    test('status 204: should increment/decrement the votes of an article and return a msg', ()=>{
+        return request(app).patch('/api/articles/2').send({inc_votes: 5}).expect(204)
+    })
+})

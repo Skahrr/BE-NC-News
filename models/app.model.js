@@ -13,3 +13,8 @@ exports.fetchArticleById = (id)=>{
         return article
     })
 }
+
+exports.changeArticleVotes = (id, inc_votes)=>{
+    return db.query('UPDATE articles SET votes= $1 WHERE article_id = $2 RETURNING *;', [inc_votes, id])
+    
+}
