@@ -71,5 +71,20 @@ describe("GET /api/articles/:article_id", () => {
 describe('PATCH /api/articles/article_id', ()=>{
     test('status 204: should increment/decrement the votes of an article and return a msg', ()=>{
         return request(app).patch('/api/articles/2').send({inc_votes: 5}).expect(204)
+    });
+    test('status 404: id not found', ()=>{
+        return request(app).patch('/api/articles/123123').send({inc_votes: 5}).expect(404).then(({body})=>{
+            expect(body.msg).toBe('ID not found')
+        })
+    });
+    test('status 400: bad request', ()=>{
+        return request(app).patch('/api/articles/paco').send({inc_votes: 5}).expect(400).then(({body})=>{
+            expect(body.msg).toBe('Bad Request!')
+        })
+    });
+    test('status 400: negative votes', ()=>{
+        return request(app).patch('/api/articles/2').send({inc_votes: -5}).expect(400).then(({body})=>{
+            expect(body.msg).toBe('Article can not have negative votes')
+        })
     })
 })

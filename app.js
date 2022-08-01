@@ -21,8 +21,16 @@ app.use((err, req, res, next) => {
     next(err);
   }
 });
-
+app.use((err, req, res, next)=>{
+    if(err.id === 'custom'){
+        res.status(400).send(err)
+    }
+    else{
+        next(err)
+    }
+})
 app.use((err, req, res, next) => {
+
   res.status(404).send(err);
 });
 
