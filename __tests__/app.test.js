@@ -5,31 +5,29 @@ const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
 
 afterAll(() => {
-    return db.end();
-  });
-  
-  beforeEach(() => {
-    return seed(data);
-  });
+  return db.end();
+});
 
-describe('GET /api/topics', ()=>{
-    test('serves an array of all topics', ()=>{
-       return request(app).get('/api/topics').expect(200).then(({body})=>{
-        const expected = [
-            {
-              description: 'The man, the Mitch, the legend',
-              slug: 'mitch'
-            },
-            {
-              description: 'Not dogs',
-              slug: 'cats'
-            },
-            {
-              description: 'what books are made of',
-              slug: 'paper'
-            }
-          ]
-        expect(body.topics).toEqual(expected)
-       })
-    })
-})
+beforeEach(() => {
+  return seed(data);
+});
+
+describe("GET /api/topics", () => {
+  test("serves an array of all topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body }) => {
+        const { topics } = body
+        expect(Array.isArray(topics)).toEqual(true);
+        expect(topics).toHaveLength(3);
+        topics.forEach((topic) => {
+          expect(topic).toEqual(
+            expect.objectContaining({
+            slug: expect.any(String),
+            description: expect.any(String),
+          }))
+        });
+      });
+  });
+});
