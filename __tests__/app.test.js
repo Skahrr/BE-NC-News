@@ -6,6 +6,6 @@ const data = require("../db/data/test-data");
 
 describe('', ()=>{
     test('testing', ()=>{
-        expect(1).toBe(2);
+        expect(1).toBe(1);
     })
 })
