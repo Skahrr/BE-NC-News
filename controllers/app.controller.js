@@ -24,7 +24,7 @@ exports.updateArticleVotes = (req, res, next) => {
   const id = req.params.article_id;
   const { inc_votes } = req.body;
   if (!inc_votes) {
-    next({ id: "custom", status: 400, msg: "Missing inc_votes" });
+    next({ id: "custom", status: 400, msg: "Missing inc_votes or wrong key" });
   } else if (isNaN(inc_votes)) {
     next({ id: "custom", status: 400, msg: "Input must be a number" });
   }

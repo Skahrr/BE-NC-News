@@ -120,10 +120,10 @@ describe("PATCH /api/articles/article_id", () => {
   test("status 400: bad request inc_votes missing", () => {
     return request(app)
       .patch("/api/articles/2")
-      .send()
+      .send({inc_vovovotes: 5})
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Missing inc_votes");
+        expect(body.msg).toBe("Missing inc_votes or wrong key");
       });
   });
   test("status 400: bad request inc_votes invalid input", () => {
