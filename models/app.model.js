@@ -35,6 +35,8 @@ exports.changeArticleVotes = (id, inc_votes) => {
         });
       } else if (res.rowCount === 0) {
         return Promise.reject({ status: 400, msg: "Bad request" });
+      } else {
+        return article;
       }
     });
 };

@@ -61,30 +61,78 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad Request!");
       });
   });
-  test('should respond with 404 error when passed a valid id but doesnt exist on db', ()=>{
-    return request(app).get('/api/articles/123123').expect(404).then(({body})=>{
-        expect(body.msg).toBe('ID not found')
-    })
-  })
+  test("should respond with 404 error when passed a valid id but doesnt exist on db", () => {
+    return request(app)
+      .get("/api/articles/123123")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID not found");
+      });
+  });
 });
 
-describe('PATCH /api/articles/article_id', ()=>{
-    test('status 204: should increment/decrement the votes of an article and return a msg', ()=>{
-        return request(app).patch('/api/articles/2').send({inc_votes: 5}).expect(204)
-    });
-    test('status 404: id not found', ()=>{
-        return request(app).patch('/api/articles/123123').send({inc_votes: 5}).expect(404).then(({body})=>{
-            expect(body.msg).toBe('ID not found')
-        })
-    });
-    test('status 400: bad request', ()=>{
-        return request(app).patch('/api/articles/paco').send({inc_votes: 5}).expect(400).then(({body})=>{
-            expect(body.msg).toBe('Bad Request!')
-        })
-    });
-    test('status 400: negative votes', ()=>{
-        return request(app).patch('/api/articles/2').send({inc_votes: -5}).expect(400).then(({body})=>{
-            expect(body.msg).toBe('Article can not have negative votes')
-        })
-    })
-})
+describe("PATCH /api/articles/article_id", () => {
+  test("status 200: should increment the votes of an article and return the updated version", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.votes).toBe(5);
+      });
+  });
+  test("status 200: should decrement the votes of an article and return the updated version", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -50 })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.votes).toBe(50);
+      });
+  });
+  test("status 404: id not found", () => {
+    return request(app)
+      .patch("/api/articles/123123")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID not found");
+      });
+  });
+  test("status 400: bad request invalid ID", () => {
+    return request(app)
+      .patch("/api/articles/paco")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("status 400: negative votes", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: -5 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article can not have negative votes");
+      });
+  });
+  test("status 400: bad request inc_votes missing", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send()
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing inc_votes");
+      });
+  });
+  test("status 400: bad request inc_votes invalid input", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({inc_votes : 'mystery'})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Input must be a number");
+      });
+  });
+});

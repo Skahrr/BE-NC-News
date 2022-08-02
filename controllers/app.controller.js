@@ -23,9 +23,14 @@ exports.getArticleById = (req, res, next) => {
 exports.updateArticleVotes = (req, res, next) => {
   const id = req.params.article_id;
   const { inc_votes } = req.body;
+  if (!inc_votes) {
+    next({ id: "custom", status: 400, msg: "Missing inc_votes" });
+  } else if (isNaN(inc_votes)) {
+    next({ id: "custom", status: 400, msg: "Input must be a number" });
+  }
   changeArticleVotes(id, inc_votes)
-    .then(() => {
-      res.sendStatus(204);
+    .then(([article]) => {
+      res.status(200).send({ article });
     })
     .catch(next);
 };
