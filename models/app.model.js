@@ -42,7 +42,15 @@ exports.changeArticleVotes = (id, inc_votes) => {
 };
 
 exports.fetchUsers = () => {
-  return db.query("SELECT * FROM users").then(({ rows: users })=>{
-    return users
+  return db.query("SELECT * FROM users").then(({ rows: users }) => {
+    return users;
   });
+};
+
+exports.fetchArticles = () => {
+  return db.query(
+    "SELECT articles.*, CAST(COUNT(comment_id) AS int) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id= comments.article_id GROUP BY articles.article_id ORDER BY created_at"
+  ).then(({rows: articles})=>{
+    return articles
+  })
 };
