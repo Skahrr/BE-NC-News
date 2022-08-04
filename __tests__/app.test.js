@@ -3,6 +3,7 @@ const app = require("../app.js");
 const request = require("supertest");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
+const jest_sorted = require("jest-sorted");
 
 afterAll(() => {
   return db.end();
@@ -158,6 +159,31 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+
+describe("GET /api/articles", () => {
+  test("should return an array with all the articles sorted by created_at DESC order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at");
+
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
 
 describe("GET /api/articles/:article_id with comment_count", () => {
   test("should return the article with comment_count column added and it''s value", () => {
