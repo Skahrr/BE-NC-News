@@ -160,6 +160,7 @@ describe("GET /api/users", () => {
   });
 });
 
+
 describe("GET /api/articles", () => {
   test("should return an array with all the articles sorted by created_at DESC order", () => {
     return request(app)
@@ -183,6 +184,27 @@ describe("GET /api/articles", () => {
             })
           );
         });
+
+describe("GET /api/articles/:article_id with comment_count", () => {
+  test("should return the article with comment_count column added and it''s value", () => {
+    return request(app).get('/api/articles/1').expect(200).then(({body})=>{
+      expect(body.article.comment_count).toBe(11)
+    })
+  });
+  test("should respond with 400 error when passed an invalid id(NaN)", () => {
+    return request(app)
+      .get("/api/articles/uno")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("should respond with 404 error when passed a valid id but doesnt exist on db", () => {
+    return request(app)
+      .get("/api/articles/123123")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID not found");
       });
   });
 });
