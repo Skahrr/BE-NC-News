@@ -257,3 +257,21 @@ describe("GET /api/articles/:article_id/comments", () => {
     })
   })
 });
+
+describe('POST /api/articles/:article_id/comments', ()=>{
+  test('should respond with the posted comment', ()=>{
+    const comment = {username: 'butter_bridge', body: 'I am not Aaron'}
+    return request(app).post('/api/articles/2/comments').send(comment).expect(201).then(({body})=>{
+      const {comment} = body
+      expect(Array.isArray(comment)).toBe(true)
+      expect.objectContaining({
+        votes: expect.any(Number),
+        article_id: expect.any(Number),
+        author: expect.any(String),
+        body: expect.any(String),
+        comment_id: expect.any(Number),
+      })
+      
+    })
+  })
+})

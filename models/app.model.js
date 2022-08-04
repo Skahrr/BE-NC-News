@@ -88,3 +88,9 @@ exports.fetchCommentsById = (id) => {
       return comments;
     });
 };
+
+exports.addComment = (id, username, body)=>{
+  return db.query('INSERT INTO comments (body, votes, author, article_id) VALUES ($1, 0, $2, $3) RETURNING *;', [body, username, id]).then(({rows: comment})=>{
+    return comment
+      })
+}
