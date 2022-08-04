@@ -160,7 +160,6 @@ describe("GET /api/users", () => {
   });
 });
 
-
 describe("GET /api/articles", () => {
   test("should return an array with all the articles sorted by created_at DESC order", () => {
     return request(app)
@@ -184,12 +183,17 @@ describe("GET /api/articles", () => {
             })
           );
         });
-
+      });
+  });
+});
 describe("GET /api/articles/:article_id with comment_count", () => {
   test("should return the article with comment_count column added and it''s value", () => {
-    return request(app).get('/api/articles/1').expect(200).then(({body})=>{
-      expect(body.article.comment_count).toBe(11)
-    })
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.comment_count).toBe(11);
+      });
   });
   test("should respond with 400 error when passed an invalid id(NaN)", () => {
     return request(app)
