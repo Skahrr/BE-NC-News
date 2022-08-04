@@ -3,7 +3,7 @@ const app = require("../app.js");
 const request = require("supertest");
 const db = require("../db/connection.js");
 const data = require("../db/data/test-data");
-const jest_sorted = require('jest-sorted')
+const jest_sorted = require("jest-sorted");
 
 afterAll(() => {
   return db.end();
@@ -121,7 +121,7 @@ describe("PATCH /api/articles/article_id", () => {
   test("status 400: bad request inc_votes missing", () => {
     return request(app)
       .patch("/api/articles/2")
-      .send({inc_vovovotes: 5})
+      .send({ inc_vovovotes: 5 })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Missing inc_votes or wrong key");
@@ -130,7 +130,7 @@ describe("PATCH /api/articles/article_id", () => {
   test("status 400: bad request inc_votes invalid input", () => {
     return request(app)
       .patch("/api/articles/2")
-      .send({inc_votes : 'mystery'})
+      .send({ inc_votes: "mystery" })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Input must be a number");
@@ -138,7 +138,7 @@ describe("PATCH /api/articles/article_id", () => {
   });
 });
 
-describe('GET /api/users', ()=>{
+describe("GET /api/users", () => {
   test("serves an array of all users", () => {
     return request(app)
       .get("/api/users")
@@ -158,13 +158,31 @@ describe('GET /api/users', ()=>{
         });
       });
   });
-})
+});
 
-describe('GET /api/articles', ()=>{
-  test('should return an array with all the articles sorted by created_at DESC order', ()=>{
-    return request(app).get('/api/articles').expect(200).then(({body})=>{
-      
-      expect(body.articles).toBeSortedBy("created_at")
-    })
-  })
-})
+describe("GET /api/articles", () => {
+  test("should return an array with all the articles sorted by created_at DESC order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at");
+
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+});
