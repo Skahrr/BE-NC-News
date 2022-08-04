@@ -212,3 +212,48 @@ describe("GET /api/articles/:article_id with comment_count", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("responds with an array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/9/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(Array.isArray(comments)).toBe(true);
+        expect(comments).toHaveLength(2);
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("status 404: ID not found when passing an Valid ID but doesnt exist on db", () => {
+    return request(app)
+      .get("/api/articles/10000000/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID not found");
+      });
+  });
+  test("status 400: Bad request when they try to search for an invalid ID", () => {
+    return request(app)
+      .get("/api/articles/paco/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test('status 200: Id is correct but there is no comments to show', ()=>{
+    return request(app).get('/api/articles/2/comments').expect(200).then(({body})=>{
+      expect(body.msg).toBe('Sorry, this article has no comments')
+    })
+  })
+});

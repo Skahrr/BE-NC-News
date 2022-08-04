@@ -3,7 +3,8 @@ const {
   fetchArticleById,
   changeArticleVotes,
   fetchUsers,
-  fetchArticles
+  fetchArticles,
+  fetchCommentsById,
 } = require("../models/app.model.js");
 
 exports.getTopics = (req, res, next) => {
@@ -43,8 +44,16 @@ exports.getUsers = (req, res, next) => {
   });
 };
 
-exports.getArticles = (req, res, next)=> {
-  fetchArticles().then((articles)=>{
-    res.status(200).send({articles})
-  })
-}
+exports.getArticles = (req, res, next) => {
+  fetchArticles().then((articles) => {
+    res.status(200).send({ articles });
+  });
+};
+
+exports.getCommentsById = (req, res, next) => {
+  const {article_id: id} = req.params
+  
+  fetchCommentsById(id).then((comments)=>{
+    res.status(200).send({comments})
+  }).catch(next)
+};

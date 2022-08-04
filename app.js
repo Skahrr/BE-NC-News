@@ -6,6 +6,7 @@ const {
   updateArticleVotes,
   getUsers,
   getArticles,
+  getCommentsById
 } = require("./controllers/app.controller.js");
 
 app.use(express.json());
@@ -15,6 +16,7 @@ app.get("/api/articles/:article_id", getArticleById);
 app.patch("/api/articles/:article_id", updateArticleVotes);
 app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);
+app.get('/api/articles/:article_id/comments', getCommentsById)
 
 ///////////////ERROR HANDLING
 
@@ -27,7 +29,7 @@ app.use((err, req, res, next) => {
 });
 app.use((err, req, res, next) => {
   if (err.id === "custom") {
-    res.status(400).send(err);
+    res.status(err.status).send(err);
   } else {
     next(err);
   }

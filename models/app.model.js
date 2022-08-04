@@ -13,7 +13,6 @@ exports.fetchArticleById = (id) => {
       [id]
     )
     .then(({ rows: [article] }) => {
-     
       if (!article) {
         return Promise.reject({ status: 404, msg: "ID not found" });
       }
@@ -53,9 +52,39 @@ exports.fetchUsers = () => {
 };
 
 exports.fetchArticles = () => {
-  return db.query(
-    "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS int) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id= comments.article_id GROUP BY articles.article_id ORDER BY created_at"
-  ).then(({rows: articles})=>{
-    return articles
-  })
+  return db
+    .query(
+      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS int) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id= comments.article_id GROUP BY articles.article_id ORDER BY created_at"
+    )
+    .then(({ rows: articles }) => {
+      return articles;
+    });
+};
+
+exports.fetchCommentsById = (id) => {
+  return db
+    .query(
+      "SELECT body, votes, author, comment_id, created_at FROM comments WHERE article_id = $1",
+      [id]
+    )
+    .then(({ rows: comments }) => {
+      if (comments.length === 0) {
+        const checkId = () => {
+          return db.query(
+            "SELECT article_id FROM articles WHERE article_id = $1",
+            [id]
+          );
+        };
+        return checkId().then(({ rows }) => {
+          if(rows.length === 0){
+            return Promise.reject({ status: 404, msg: "ID not found" });
+          }
+          else{
+            return Promise.reject({ id: 'custom', status: 200, msg: 'Sorry, this article has no comments' });
+          }
+        });
+        return Promise.reject({ status: 404, msg: "ID not found" });
+      }
+      return comments;
+    });
 };
