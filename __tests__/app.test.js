@@ -120,7 +120,7 @@ describe("PATCH /api/articles/article_id", () => {
   test("status 400: bad request inc_votes missing", () => {
     return request(app)
       .patch("/api/articles/2")
-      .send({inc_vovovotes: 5})
+      .send({ inc_vovovotes: 5 })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Missing inc_votes or wrong key");
@@ -129,7 +129,7 @@ describe("PATCH /api/articles/article_id", () => {
   test("status 400: bad request inc_votes invalid input", () => {
     return request(app)
       .patch("/api/articles/2")
-      .send({inc_votes : 'mystery'})
+      .send({ inc_votes: "mystery" })
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Input must be a number");
@@ -137,7 +137,7 @@ describe("PATCH /api/articles/article_id", () => {
   });
 });
 
-describe('GET /api/users', ()=>{
+describe("GET /api/users", () => {
   test("serves an array of all users", () => {
     return request(app)
       .get("/api/users")
@@ -157,4 +157,28 @@ describe('GET /api/users', ()=>{
         });
       });
   });
-})
+});
+
+describe("GET /api/articles/:article_id with comment_count", () => {
+  test("should return the article with comment_count column added and it''s value", () => {
+    return request(app).get('/api/articles/1').expect(200).then(({body})=>{
+      expect(body.article.comment_count).toBe(11)
+    })
+  });
+  test("should respond with 400 error when passed an invalid id(NaN)", () => {
+    return request(app)
+      .get("/api/articles/uno")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("should respond with 404 error when passed a valid id but doesnt exist on db", () => {
+    return request(app)
+      .get("/api/articles/123123")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID not found");
+      });
+  });
+});
