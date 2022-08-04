@@ -251,27 +251,51 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad Request!");
       });
   });
-  test('status 200: Id is correct but there is no comments to show', ()=>{
-    return request(app).get('/api/articles/2/comments').expect(200).then(({body})=>{
-      expect(body.msg).toBe('Sorry, this article has no comments')
+  test("status 200: Id is correct but there is no comments to show", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Sorry, this article has no comments");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("should respond with the posted comment", () => {
+    const comment = { username: "butter_bridge", body: "I am not Aaron" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(Array.isArray(comment)).toBe(true);
+        expect.objectContaining({
+          votes: expect.any(Number),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          body: expect.any(String),
+          comment_id: expect.any(Number),
+        });
+      });
+  });
+  test('status 404: ID not found', ()=>{
+    const comment = { username: "butter_bridge", body: "I am not Aaron" };
+    return request(app).post('/api/articles/12312323/comments').send(comment).expect(404).then(({body})=>{
+      expect(body.msg).toBe('ID not found');
+    })
+  })
+  test('status 400: invalid ID', ()=>{
+    const comment = { username: "butter_bridge", body: "I am not Aaron" };
+    return request(app).post('/api/articles/paco/comments').send(comment).expect(400).then(({body})=>{
+      expect(body.msg).toBe('Bad Request!');
+    })
+  })
+  test('status 400: bad request wrong properties/values', ()=>{
+    const comment = { nameuser: "butter_bridge", dybo: "I am not Aaron" };
+    return request(app).post('/api/articles/2/comments').send(comment).expect(404).then(({body})=>{
+      expect(body.msg).toBe('Missing data/Wrong datatype');
     })
   })
 });
-
-describe('POST /api/articles/:article_id/comments', ()=>{
-  test('should respond with the posted comment', ()=>{
-    const comment = {username: 'butter_bridge', body: 'I am not Aaron'}
-    return request(app).post('/api/articles/2/comments').send(comment).expect(201).then(({body})=>{
-      const {comment} = body
-      expect(Array.isArray(comment)).toBe(true)
-      expect.objectContaining({
-        votes: expect.any(Number),
-        article_id: expect.any(Number),
-        author: expect.any(String),
-        body: expect.any(String),
-        comment_id: expect.any(Number),
-      })
-      
-    })
-  })
-})

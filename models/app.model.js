@@ -76,21 +76,28 @@ exports.fetchCommentsById = (id) => {
           );
         };
         return checkId().then(({ rows }) => {
-          if(rows.length === 0){
+          if (rows.length === 0) {
             return Promise.reject({ status: 404, msg: "ID not found" });
-          }
-          else{
-            return Promise.reject({ id: 'custom', status: 200, msg: 'Sorry, this article has no comments' });
+          } else {
+            return Promise.reject({
+              id: "custom",
+              status: 200,
+              msg: "Sorry, this article has no comments",
+            });
           }
         });
-        return Promise.reject({ status: 404, msg: "ID not found" });
       }
       return comments;
     });
 };
 
-exports.addComment = (id, username, body)=>{
-  return db.query('INSERT INTO comments (body, votes, author, article_id) VALUES ($1, 0, $2, $3) RETURNING *;', [body, username, id]).then(({rows: comment})=>{
-    return comment
-      })
-}
+exports.addComment = (id, username, body) => {
+  return db
+    .query(
+      "INSERT INTO comments (body, votes, author, article_id) VALUES ($1, 0, $2, $3) RETURNING *;",
+      [body, username, id]
+    )
+    .then(({ rows: comment }) => {
+      return comment;
+    });
+};
