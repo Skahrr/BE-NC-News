@@ -362,12 +362,18 @@ describe("ADD QUERIES FOR GET /api/articles", () => {
   });
   test("status 404: invalid query inputs (sort_by non existent column)", () => {
     return request(app)
-      .get("/api/articles?sort_by=pacoRabanne&order=ASC&topic=cats")
-      .expect(404);
+      .get("/api/articles?sort_by=paco")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing data/Wrong datatype");
+      });
   });
   test("status 404: invalid query inputs (order input wrong)", () => {
     return request(app)
       .get("/api/articles?sort_by=title&order=diagonal&topic=cats")
-      .expect(404);
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing data/Wrong datatype");
+      });
   });
 });

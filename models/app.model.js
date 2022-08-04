@@ -66,6 +66,8 @@ exports.fetchArticles = (sortBy = 'created_at', order = 'DESC', topic) => {
     .then(({ rows: articles }) => {
       return articles;
     });
+  }else{
+    return Promise.reject({code: '23502'})
   }
   
 };
