@@ -6,7 +6,9 @@ const {
   fetchArticles,
   fetchCommentsById,
   addComment,
+  fetchEndpoints,
 } = require("../models/app.model.js");
+const endpoints = require("../endpoints.json");
 
 exports.getTopics = (req, res, next) => {
   fetchOwners().then((topics) => {
@@ -72,4 +74,9 @@ exports.postComment = (req, res, next) => {
       res.status(201).send({ comment });
     })
     .catch(next);
+};
+
+exports.getEndpoints = (req, res, next) => {
+  
+  res.status(200).send(endpoints);
 };

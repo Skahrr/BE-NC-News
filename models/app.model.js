@@ -1,5 +1,4 @@
 const db = require("../db/connection.js");
-const articles = require("../db/data/test-data/articles.js");
 exports.fetchOwners = () => {
   return db.query("SELECT * FROM topics").then(({ rows: topics }) => {
     return topics;
@@ -120,3 +119,4 @@ exports.addComment = (id, username, body) => {
       return comment;
     });
 };
+
