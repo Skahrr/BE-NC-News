@@ -86,12 +86,23 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description":"",
+    "description":"responds with the posted comment",
     "queries": [],
-    "exampleResponse": {}
+    "input": {"username": "butter_bridge", "body": "The owls are not what they seem."},
+    "exampleResponse": {
+      "comment": [
+        {     
+            "body": "The owls are not what they seem.",
+            "votes": 20,
+            "author": "icellusedkars",
+            "article_id": 9,
+            "created_at": 1584205320000
+        }
+      ]
+    }
   },
   "DELETE /api/comments/:comment_id": {
-    "description":"",
+    "description":"deletes the specified comment and responds with 204 status",
     "queries": [],
     "exampleResponse": {}
   }
