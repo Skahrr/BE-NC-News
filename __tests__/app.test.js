@@ -393,25 +393,3 @@ describe("ADD QUERIES FOR GET /api/articles", () => {
       });
   });
 });
-
-describe("DELETE /api/comments/:comment_id", () => {
-  test("should delete the comment successfully and return status 204", () => {
-    return request(app).delete("/api/comments/7").expect(204);
-  });
-  test("status 404: comment not found with the specified ID", () => {
-    return request(app)
-      .delete("/api/comments/700000")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("ID not found");
-      });
-  });
-  test("status 400: comment not found with the specified ID", () => {
-    return request(app)
-      .delete("/api/comments/notAnId")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad Request!");
-      });
-  });
-});
