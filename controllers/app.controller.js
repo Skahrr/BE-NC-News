@@ -6,7 +6,7 @@ const {
   fetchArticles,
   fetchCommentsById,
   addComment,
-  fetchEndpoints,
+  removeComment
 } = require("../models/app.model.js");
 const endpoints = require("../endpoints.json");
 
@@ -75,6 +75,13 @@ exports.postComment = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.deleteComment = (req, res, next) =>{
+  const {comment_id: id} = req.params
+  removeComment(id).then(()=>{
+    res.sendStatus(204)
+  }).catch(next)
+}
 
 exports.getEndpoints = (req, res, next) => {
   

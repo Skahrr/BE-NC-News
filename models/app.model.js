@@ -109,6 +109,14 @@ exports.fetchCommentsById = (id) => {
     });
 };
 
+exports.removeComment = (id)=>{
+  return db.query('DELETE FROM comments WHERE comment_id = $1', [id]).then(({rowCount})=>{
+    if(!rowCount){
+      return Promise.reject({code: '23503'})
+    }
+  })
+}
+
 exports.addComment = (id, username, body) => {
   return db
     .query(
