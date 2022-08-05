@@ -393,3 +393,22 @@ describe("ADD QUERIES FOR GET /api/articles", () => {
       });
   });
 });
+
+describe("GET /api", () => {
+  test("should return all endpoints, including description, possible queries and example response", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        for (const endpoint in body) {
+          expect(body[endpoint]).toEqual(
+            expect.objectContaining({
+              description: expect.any(String),
+              queries: expect.any(Object),
+              exampleResponse: expect.any(Object),
+            })
+          );
+        }
+      });
+  });
+});
