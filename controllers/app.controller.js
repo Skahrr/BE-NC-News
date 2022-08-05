@@ -46,9 +46,12 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { sort_by: sortBy, order, topic } = req.query;
+  fetchArticles(sortBy, order, topic)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
 
 exports.getCommentsById = (req, res, next) => {

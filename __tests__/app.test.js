@@ -166,7 +166,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeSortedBy("created_at");
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
 
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
@@ -280,22 +280,116 @@ describe("POST /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test('status 404: ID not found', ()=>{
+  test("status 404: ID not found", () => {
     const comment = { username: "butter_bridge", body: "I am not Aaron" };
-    return request(app).post('/api/articles/12312323/comments').send(comment).expect(404).then(({body})=>{
-      expect(body.msg).toBe('ID not found');
-    })
-  })
-  test('status 400: invalid ID', ()=>{
+    return request(app)
+      .post("/api/articles/12312323/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("ID not found");
+      });
+  });
+  test("status 400: invalid ID", () => {
     const comment = { username: "butter_bridge", body: "I am not Aaron" };
-    return request(app).post('/api/articles/paco/comments').send(comment).expect(400).then(({body})=>{
-      expect(body.msg).toBe('Bad Request!');
-    })
-  })
-  test('status 400: bad request wrong properties/values', ()=>{
+    return request(app)
+      .post("/api/articles/paco/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("status 400: bad request wrong properties/values", () => {
     const comment = { nameuser: "butter_bridge", dybo: "I am not Aaron" };
-    return request(app).post('/api/articles/2/comments').send(comment).expect(404).then(({body})=>{
-      expect(body.msg).toBe('Missing data/Wrong datatype');
-    })
-  })
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing data/Wrong datatype");
+      });
+  });
+});
+
+describe("ADD QUERIES FOR GET /api/articles", () => {
+  test("should return the articles sorted by title", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("should return the articles ordered in asc way", () => {
+    return request(app)
+      .get("/api/articles?order=ASC")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+  test("should return the articles filtered by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              topic: "mitch",
+            })
+          );
+        });
+      });
+  });
+  test("should return the articles formatted according to the specified queries", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=ASC&topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("title", { descending: false });
+        const { articles } = body;
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              topic: "cats",
+            })
+          );
+        });
+      });
+  });
+  test("status 400: invalid query inputs (sort_by non existent column)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=paco")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("status 400: invalid query inputs (order input wrong)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&order=diagonal&topic=cats")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("status 200: valid topic but no article", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("0 matches found");
+      });
+  });
+  test("status 404: non existing topic", () => {
+    return request(app)
+      .get("/api/articles?topic=katas")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic does not exist");
+      });
+  });
 });

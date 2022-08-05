@@ -51,14 +51,33 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.fetchArticles = () => {
-  return db
+exports.fetchArticles = (sortBy = 'created_at', order = 'DESC', topic) => {
+  const validSortby = ['article_id', 'title', 'topic', 'author', 'created_at', 'votes']
+  const validOrder = ['ASC', 'DESC']
+  const validTopics = ['mitch', 'cats', 'paper']
+  
+  let optionalWhere = ` `
+  if(topic){
+    optionalWhere = ` WHERE topic = '${topic}' `
+  }
+  if(validSortby.includes(sortBy) && validOrder.includes(order)){
+    return db
     .query(
-      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS int) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id= comments.article_id GROUP BY articles.article_id ORDER BY created_at"
-    )
+      `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS int) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id= comments.article_id`+ optionalWhere +  `GROUP BY articles.article_id ORDER BY ${sortBy} ${order};`)
     .then(({ rows: articles }) => {
+
+      if(!articles.length){
+        if(!validTopics.includes(topic)){
+          return Promise.reject({id: 'custom', status: 404, msg: 'Topic does not exist'})
+        }
+        return Promise.reject({id: 'custom', status: 200, msg: '0 matches found'})
+      }
       return articles;
     });
+  }else{
+    return Promise.reject({code: '22P02'})
+  }
+  
 };
 
 exports.fetchCommentsById = (id) => {
