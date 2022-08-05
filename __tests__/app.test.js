@@ -360,20 +360,36 @@ describe("ADD QUERIES FOR GET /api/articles", () => {
         });
       });
   });
-  test("status 404: invalid query inputs (sort_by non existent column)", () => {
+  test("status 400: invalid query inputs (sort_by non existent column)", () => {
     return request(app)
       .get("/api/articles?sort_by=paco")
-      .expect(404)
+      .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Missing data/Wrong datatype");
+        expect(body.msg).toBe("Bad Request!");
       });
   });
-  test("status 404: invalid query inputs (order input wrong)", () => {
+  test("status 400: invalid query inputs (order input wrong)", () => {
     return request(app)
       .get("/api/articles?sort_by=title&order=diagonal&topic=cats")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request!");
+      });
+  });
+  test("status 200: valid topic but no article", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("0 matches found");
+      });
+  });
+  test("status 404: non existing topic", () => {
+    return request(app)
+      .get("/api/articles?topic=katas")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Missing data/Wrong datatype");
+        expect(body.msg).toBe("Topic does not exist");
       });
   });
 });
