@@ -120,3 +120,11 @@ exports.addComment = (id, username, body) => {
       return comment;
     });
 };
+
+exports.removeComment = (id)=>{
+  return db.query('DELETE FROM comments WHERE comment_id = $1', [id]).then(({rowCount})=>{
+    if(!rowCount){
+      return Promise.reject({code: '23503'})
+    }
+  })
+}

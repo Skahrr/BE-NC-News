@@ -7,7 +7,8 @@ const {
   getUsers,
   getArticles,
   getCommentsById,
-  postComment
+  postComment,
+  deleteComment,
 } = require("./controllers/app.controller.js");
 
 app.use(express.json());
@@ -17,8 +18,9 @@ app.get("/api/articles/:article_id", getArticleById);
 app.patch("/api/articles/:article_id", updateArticleVotes);
 app.get("/api/users", getUsers);
 app.get("/api/articles", getArticles);
-app.get('/api/articles/:article_id/comments', getCommentsById)
-app.post('/api/articles/:article_id/comments', postComment)
+app.get("/api/articles/:article_id/comments", getCommentsById);
+app.post("/api/articles/:article_id/comments", postComment);
+app.delete("/api/comments/:comment_id", deleteComment);
 
 ///////////////ERROR HANDLING
 
@@ -29,20 +31,20 @@ app.use((err, req, res, next) => {
     next(err);
   }
 });
-app.use((err, req, res, next)=>{
-  if(err.code === '23503'){
-    res.status(404).send({status: 404, msg: 'ID not found'})
-  }else{
-    next(err)
+app.use((err, req, res, next) => {
+  if (err.code === "23503") {
+    res.status(404).send({ status: 404, msg: "ID not found" });
+  } else {
+    next(err);
   }
-})
-app.use((err, req, res, next)=>{
-  if(err.code === '23502'){
-    res.status(404).send({status: 404, msg: 'Missing data/Wrong datatype'})
-  }else{
-    next(err)
+});
+app.use((err, req, res, next) => {
+  if (err.code === "23502") {
+    res.status(404).send({ status: 404, msg: "Missing data/Wrong datatype" });
+  } else {
+    next(err);
   }
-})
+});
 app.use((err, req, res, next) => {
   if (err.id === "custom") {
     res.status(err.status).send(err);
