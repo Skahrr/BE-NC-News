@@ -21,10 +21,9 @@ Northcoders news is an API designed as the backend for a news app. The API inter
 
 ## Hosted Version
 
-Northcoders News is hosted on Heroku, you can find it here:
+Northcoders News is hosted on Render, you can find it here:
 
-https://be-nc-news-aaron.herokuapp.com
-
+https://be-nc-news-x3yy.onrender.com
 
 # Installation
 
